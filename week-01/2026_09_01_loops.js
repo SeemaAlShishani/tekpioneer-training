@@ -23,7 +23,7 @@ for (let i = 2; i <= 20; i += 2) {
 let x=7;
 for ( let i=1 ; i<=10 ; i++ )
 { 
-    console.log( `${x}` + " × " + `${i}` + " = " + x * i );
+    console.log( `${x} ×  ${i}  =  ${x * i}` );
 }
 
 
@@ -31,12 +31,15 @@ for(let i=1;i<=5;i++){
     console.log("Seema");
 }
 
-let i = 1;
 
-while (i <= 128) {
+let target=100;
+let i=1;
+while (i <= target*2) {
     console.log(i);
     i = i * 2;
 }
+
+
 
 for (let i=1; i<=30; i++){
     if (i%3===0 && i%5===0){

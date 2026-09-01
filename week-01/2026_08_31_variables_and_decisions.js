@@ -1,7 +1,7 @@
-const Name = "seema";
-let Age = 19;
-const University = "Jerash Private University";
-console.log(`My name is ${Name}` + ", I am " + Age + " years old.");
+const name = "seema";
+let age = 19;
+const university = "Jerash Private University";
+console.log(`My name is ${name} , I am  ${age}  years old, and I study at ${university}`);
 
 let a = 7;
 let b = 3;
