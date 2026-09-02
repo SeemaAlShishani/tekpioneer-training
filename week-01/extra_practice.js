@@ -16,7 +16,7 @@ for (let i = 20; i >= 1; i -= 2) {
 
 
 
-let sum=0;
+let sum = 0;
 for (let i = 0; i <= 50; i++){
     sum += i;
 }
@@ -167,3 +167,66 @@ else {
 }
 
 
+
+function greet(){
+    console.log("Hello Seema");
+}
+greet();
+
+
+
+function plus(a , b){
+     return a+b;
+}
+console.log(plus(7 , 3));
+
+
+
+function birth(birthYear){
+    return 2026 - birthYear;
+}
+console.log(birth(2007));
+
+
+
+function numType(n){
+    if (n % 2 === 0){
+        return "even";
+    }
+    else {
+        return "odd";
+    }
+}
+console.log(numType(3));
+console.log(numType(8));
+
+
+
+
+function evaluation(grade){
+    if (grade >= 50){
+        return "pass";
+    }
+    else{
+        return "fail";
+    }
+}
+console.log(evaluation(70));
+console.log(evaluation(40));
+
+
+
+function weather(temp){
+    if (temp >30){
+        return "Hot";
+    }
+    else if (temp >=15){
+        return "Nice";
+    }
+    else {
+        return "Cold";
+    }
+}
+console.log(weather(35));
+console.log(weather(20));
+console.log(weather(10));
