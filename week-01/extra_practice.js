@@ -230,3 +230,38 @@ function weather(temp){
 console.log(weather(35));
 console.log(weather(20));
 console.log(weather(10));
+
+
+
+function bigger(j , k){
+   if (j > k){
+     return j;
+    }
+    else {
+        return k;
+    }
+}
+console.log(bigger(12 , 19));
+console.log(bigger(11 , 30));
+
+
+
+function calculateTotal(cost , number){
+    return cost*number
+}
+console.log(calculateTotal(20 , 15));
+
+
+
+function average(r , t ,v){
+    return (r+t+v)/3 ;
+}
+console.log(average(80 , 87 , 92));
+
+
+
+function studentInfo(name, age, university) {
+    console.log(`I am ${name}, I am ${age} years old, I study at ${university}`);
+}
+
+studentInfo("Sara", 20, "Jerash Private University");
