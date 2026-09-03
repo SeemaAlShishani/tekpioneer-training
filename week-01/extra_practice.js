@@ -265,3 +265,179 @@ function studentInfo(name, age, university) {
 }
 
 studentInfo("Sara", 20, "Jerash Private University");
+
+
+
+let fruits = ["apple", "banana", "orange", "mango", "grape"];
+console.log(fruits.length);
+console.log(fruits[0]);
+console.log(fruits[4]);
+
+
+
+let nums = [10, 20, 30];
+nums.push(50 , 90);
+console.log(nums);
+
+
+
+let names = ["Seema", "Aynoor", "Sara", "Omar"];
+console.log(names[2]);
+ 
+
+
+let cities = ["Amman", "Irbid", "Jerash", "Aqaba"];
+for (let i = 0; i < cities.length; i++){
+    console.log(cities[i]);
+}
+
+
+
+let numbers = [5 , 10 , 20 , 25];
+let ssum =0;
+for (let i = 0; i < numbers.length; i++){
+    ssum+= numbers[i];
+}
+console.log(ssum);
+
+
+
+let evenNum = [3, 8, 11, 14, 20, 25, 30];
+for(let i = 0; i < evenNum.length; i++){
+if (evenNum[i] % 2 === 0){
+    console.log(evenNum[i])}
+}
+
+
+
+let gradess = [40, 75, 82, 35, 90, 55, 48, 67];
+let paSs = 0;
+for (let i = 0; i < gradess.length; i++){
+    if (gradess[i] >= 50){
+            paSs += 1;
+    }
+} 
+console.log(paSs);
+
+
+
+let numms = [12, 45, 7, 89, 34, 21];
+let largest =numms[0];
+for (let i= 0; i < numms.length; i++){
+    if (largest < numms[i]){
+        largest = numms[i]
+    }
+}
+console.log(largest);
+
+
+
+let nummss = [12, 45, 7, 89, 34, 21];
+let smallest =nummss[0];
+for (let i= 0; i > nummss.length; i++){
+    if (smallest > nummss[i]){
+        smallest = nummss[i]
+    }
+}
+console.log(smallest);
+
+
+
+let grad = [80, 70, 90, 60, 100];
+let tot= 0;
+for(let i = 0; i < grad.length; i++){
+    tot += grad[i];
+}
+averAge = tot/grad.length; 
+console.log(averAge);
+
+
+
+let ns = [20, 75, 45, 90, 33, 60, 10, 85];
+let l = 0;
+for (let i = 0; i <ns.length; i++){
+    if (ns[i] > 50){
+        l += 1; 
+    }
+}
+console.log(l);
+
+
+
+let ggrades = [95, 82, 74, 61, 43];
+function gradeWord(markk){
+    if (markk >= 90){
+        return "Excellent";
+    }
+    else if (markk >= 80){
+        return "Very good";
+    }
+    else if (markk >= 70){
+        return "Good";
+    }
+    else if (markk >= 50){
+        return "Pass";
+    }
+    else {
+        return "Fail";
+    }
+}
+for (let i = 0; i< ggrades.length; i++){
+    console.log(ggrades[i]+" "+gradeWord(ggrades[i]));
+}
+
+
+
+let nb = [4, 7, 12, 3, 18, 21, 6, 9];
+console.log(nb.length);
+
+
+
+let nbSum = 0;
+for (let i = 0; i < nb.length; i++){
+    nbSum += nb[i];
+}
+console.log(nbSum);
+
+
+let nbAverage=nbSum/nb.length;
+console.log(nbAverage);
+
+
+let nbBigger = nb[0];
+for (let i = 0; i < nb.length; i++){
+    if(nbBigger < nb[i]){
+        nbBigger = nb[i];
+    }
+}
+console.log(nbBigger);
+
+
+
+let nbSmaller = nb[0];
+for (let i = 0; i < nb.length; i++){
+    if(nbSmaller > nb[i]){
+        nbSmaller = nb[i];
+    }
+}
+console.log(nbSmaller);
+
+
+
+let nbEven = 0;
+for(let i = 0; i < nb.length; i++){
+    if(nb[i] % 2 === 0){
+        nbEven += 1;
+    }
+}
+console.log(nbEven);
+
+
+
+let nbOdd = 0;
+for(let i = 0; i < nb.length; i++){
+    if(nb[i] % 2 === 1){
+        nbOdd += 1;
+    }
+}
+console.log(nbOdd);
