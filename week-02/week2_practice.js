@@ -17,9 +17,20 @@ console.log(carPractice2);
 const moviePractice3 = {
   title: "The Matrix",
   rating: 8,
-  genres: [ "Action", "Sci-Fi", "Drama"],
+  genres: ["Action", "Sci-Fi", "Drama"],
 };
 console.log(moviePractice3.title);
 console.log(
-    `first genre is ${moviePractice3.genres[0]}, last genre is ${moviePractice3.genres[2]}`
+  `first genre is ${moviePractice3.genres[0]}, last genre is ${moviePractice3.genres[2]}`,
 );
+
+const studentPractice4=[
+    {name: "Bana", grade: 85},
+    {name: "Sara", grade: 78},
+    {name: "Lina", grade: 92},
+    {name: "Noor", grade: 66},
+]; 
+
+for (let i = 0; i < studentPractice4.length; i++) {
+    console.log(`${studentPractice4[i].name}: ${studentPractice4[i].grade}`);
+}
