@@ -48,24 +48,26 @@ const updatedTasksText = JSON.stringify(savedTasks, null, 2);
 
 fs.writeFileSync("tasks.json", updatedTasksText);
 
-const projectTasks = [
-  {
-    id: 1,
-    text: "Study JSON",
-    done: false
-  },
-  {
-    id: 2,
-    text: "Practice JavaScript",
-    done: false
-  },
-  {
-    id: 3,
-    text: "Learn files",
-    done: false
+function loadTasks() {
+  if (!fs.existsSync("tasks.json")) {
+    return [];
   }
-];
 
-const projectTasksText = JSON.stringify(projectTasks, null, 2);
+  const tasksData = fs.readFileSync("tasks.json", "utf8");
 
-console.log(projectTasksText);
+  return JSON.parse(tasksData);
+}
+
+function saveTasks(tasks) {
+  const tasksText = JSON.stringify(tasks, null, 2);
+
+  fs.writeFileSync("tasks.json", tasksText);
+}
+
+const loadedTasks = loadTasks();
+
+console.log(loadedTasks);
+
+saveTasks(loadedTasks);
+
+console.log("Tasks saved successfully");
