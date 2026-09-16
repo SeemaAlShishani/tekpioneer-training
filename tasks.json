@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "text": "Study JSON",
+    "done": false
+  },
+  {
+    "id": 2,
+    "text": "Practice JavaScript",
+    "done": false
+  },
+  {
+    "id": 3,
+    "text": "Learn files",
+    "done": false
+  },
+  {
+    "id": 4,
+    "text": "Practice files",
+    "done": false
+  },
+  {
+    "id": 5,
+    "text": "Practice files",
+    "done": false
+  },
+  {
+    "id": 6,
+    "text": "Practice files",
+    "done": false
+  },
+  {
+    "id": 7,
+    "text": "Practice files",
+    "done": false
+  }
+]
