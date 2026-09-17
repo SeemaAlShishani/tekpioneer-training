@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "text": "study JSON",
+    "done": false
+  },
+  {
+    "id": 2,
+    "text": "practice JavaScript",
+    "done": false
+  },
+  {
+    "id": 3,
+    "text": "learn files",
+    "done": false
+  }
+]
