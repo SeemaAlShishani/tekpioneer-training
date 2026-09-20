@@ -6,12 +6,7 @@
   },
   {
     "id": 2,
-    "text": "practice JavaScript",
-    "done": false
-  },
-  {
-    "id": 3,
-    "text": "learn files",
+    "text": "test delete",
     "done": false
   }
 ]
