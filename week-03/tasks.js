@@ -17,6 +17,11 @@ function loadTasks() {
 if (command === "add") {
   const tasks = loadTasks();
 
+  if (!text) {
+    console.log("Please provide a task text.");
+    return;
+  }
+
   tasks.push({
     id: tasks.length + 1,
     text: text,
@@ -33,6 +38,7 @@ if (command === "add") {
 
   tasks.forEach((task) => {
     const mark = task.done ? "[x]" : "[ ]";
+
     console.log(`${task.id}. ${mark} ${task.text}`);
   });
 

@@ -1,12 +1,17 @@
 [
   {
     "id": 1,
-    "text": "study JSON",
+    "text": "test delete",
     "done": false
   },
   {
     "id": 2,
-    "text": "test delete",
+    "text": "final test",
+    "done": false
+  },
+  {
+    "id": 3,
+    "text": "demo task",
     "done": false
   }
 ]
