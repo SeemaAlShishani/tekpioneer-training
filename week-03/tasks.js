@@ -1,15 +1,17 @@
 const fs = require("fs");
+const path = require("path");
+const FILE = path.join(__dirname, "tasks.json");
 
 const command = process.argv[2];
 const text = process.argv[3];
 const taskNumber = Number(process.argv[3]);
 
 function loadTasks() {
-  if (!fs.existsSync("tasks.json")) {
+  if (!fs.existsSync(FILE)) {
     return [];
   }
 
-  const tasksData = fs.readFileSync("tasks.json", "utf8");
+  const tasksData = fs.readFileSync(FILE, "utf8");
 
   return JSON.parse(tasksData);
 }
@@ -30,7 +32,7 @@ if (command === "add") {
 
   const tasksText = JSON.stringify(tasks, null, 2);
 
-  fs.writeFileSync("tasks.json", tasksText);
+  fs.writeFileSync(FILE, tasksText);
 
   console.log(`Added: ${text}`);
 } else if (command === "list") {
@@ -56,7 +58,7 @@ if (command === "add") {
 
     const tasksText = JSON.stringify(tasks, null, 2);
 
-    fs.writeFileSync("tasks.json", tasksText);
+    fs.writeFileSync(FILE, tasksText);
 
     console.log(`Done: ${task.text}`);
   }
@@ -75,7 +77,7 @@ if (command === "add") {
 
     const tasksText = JSON.stringify(tasks, null, 2);
 
-    fs.writeFileSync("tasks.json", tasksText);
+    fs.writeFileSync(FILE, tasksText);
 
     console.log(`Deleted: ${task.text}`);
   }
