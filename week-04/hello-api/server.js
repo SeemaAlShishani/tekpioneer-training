@@ -44,7 +44,52 @@ app.get("/repeat", (req, res) => {
   });
 });
 
+const tasks = [
+  {
+    id: 1,
+    text: "Learn Express",
+    done: true
+  },
+  {
+    id: 2,
+    text: "Practice GET routes",
+    done: false
+  },
+  {
+    id: 3,
+    text: "Learn Postman",
+    done: false
+  }
+];
 
+app.get("/tasks", (req, res) => {
+  res.json(tasks);
+});
+
+app.get("/tasks/stats", (req, res) => {
+  const total = tasks.length;
+  const done = tasks.filter((task) => task.done).length;
+  const remaining = total - done;
+
+  res.json({
+    total: total,
+    done: done,
+    remaining: remaining
+  });
+});
+
+app.get("/tasks/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const task = tasks.find((task) => task.id === id);
+
+  if (!task) {
+    return res.status(404).json({
+      error: "Task not found"
+    });
+  }
+
+  res.json(task);
+});
 
 app.listen(3000, () => {
   console.log("Server started on port 3000");
