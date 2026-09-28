@@ -2,6 +2,8 @@ const express = require("express");
 
 const app = express();
 
+app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("Hello from Seema's server - Week 4");
 });
@@ -16,7 +18,7 @@ app.get("/about", (req, res) => {
 
 app.get("/greet/:name", (req, res) => {
   res.json({
-    message: `Hello, ${req.params.name}!`
+    message: `Hello, ${req.params.name}!`,
   });
 });
 
@@ -25,13 +27,13 @@ app.get("/square/:n", (req, res) => {
 
   if (Number.isNaN(number)) {
     return res.json({
-      error: "Please provide a valid number."
+      error: "Please provide a valid number.",
     });
   }
 
   res.json({
     number: number,
-    square: number * number
+    square: number * number,
   });
 });
 
@@ -40,7 +42,7 @@ app.get("/repeat", (req, res) => {
   const times = Number(req.query.times);
 
   res.json({
-    result: word.repeat(times)
+    result: word.repeat(times),
   });
 });
 
@@ -48,22 +50,42 @@ const tasks = [
   {
     id: 1,
     text: "Learn Express",
-    done: true
+    done: true,
   },
   {
     id: 2,
     text: "Practice GET routes",
-    done: false
+    done: false,
   },
   {
     id: 3,
     text: "Learn Postman",
-    done: false
-  }
+    done: false,
+  },
 ];
 
 app.get("/tasks", (req, res) => {
   res.json(tasks);
+});
+
+app.post("/tasks", (req, res) => {
+  const text = req.body.text;
+
+  if (!text) {
+    return res.status(400).json({
+      error: "Task text is required",
+    });
+  }
+
+  const newTask = {
+    id: tasks.length + 1,
+    text: text,
+    done: false,
+  };
+
+  tasks.push(newTask);
+
+  res.status(201).json(newTask);
 });
 
 app.get("/tasks/stats", (req, res) => {
@@ -74,7 +96,7 @@ app.get("/tasks/stats", (req, res) => {
   res.json({
     total: total,
     done: done,
-    remaining: remaining
+    remaining: remaining,
   });
 });
 
@@ -84,13 +106,22 @@ app.get("/tasks/:id", (req, res) => {
 
   if (!task) {
     return res.status(404).json({
-      error: "Task not found"
+      error: "Task not found",
     });
   }
 
   res.json(task);
 });
+app.delete("/tasks/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const index = tasks.findIndex((task) => task.id === id);
 
+  if (index === -1) {
+    return res.status(404).json({ error: "Task not found" });
+  }
+
+  res.json({ message: "Task deleted successfully", task: deletedTask[0] });
+});
 app.listen(3000, () => {
   console.log("Server started on port 3000");
 });
