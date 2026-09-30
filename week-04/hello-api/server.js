@@ -4,6 +4,8 @@ const app = express();
 
 app.use(express.json());
 
+let nextId = 4;
+
 app.get("/", (req, res) => {
   res.send("Hello from Seema's server - Week 4");
 });
@@ -26,7 +28,7 @@ app.get("/square/:n", (req, res) => {
   const number = Number(req.params.n);
 
   if (Number.isNaN(number)) {
-    return res.json({
+    return res.status(400).json({
       error: "Please provide a valid number.",
     });
   }
@@ -40,6 +42,19 @@ app.get("/square/:n", (req, res) => {
 app.get("/repeat", (req, res) => {
   const word = req.query.word;
   const times = Number(req.query.times);
+
+  if (
+    !word ||
+    Number.isNaN(times) ||
+    times < 1 ||
+    times > 50 ||
+    !Number.isInteger(times)
+  ) {
+    return res.status(400).json({
+      error:
+        "word is required, and times must be a whole number between 1 and 50",
+    });
+  }
 
   res.json({
     result: word.repeat(times),
@@ -71,15 +86,15 @@ app.get("/tasks", (req, res) => {
 app.post("/tasks", (req, res) => {
   const text = req.body.text;
 
-  if (!text) {
+  if (typeof text !== "string" || text.trim() === "") {
     return res.status(400).json({
-      error: "Task text is required",
+      error: "Task text is required and cannot be empty or numbers only",
     });
   }
 
   const newTask = {
-    id: tasks.length + 1,
-    text: text,
+    id: nextId++,
+    text: text.trim(),
     done: false,
   };
 
@@ -112,6 +127,7 @@ app.get("/tasks/:id", (req, res) => {
 
   res.json(task);
 });
+
 app.delete("/tasks/:id", (req, res) => {
   const id = Number(req.params.id);
   const index = tasks.findIndex((task) => task.id === id);
@@ -120,8 +136,11 @@ app.delete("/tasks/:id", (req, res) => {
     return res.status(404).json({ error: "Task not found" });
   }
 
+  const deletedTask = tasks.splice(index, 1);
+
   res.json({ message: "Task deleted successfully", task: deletedTask[0] });
 });
+
 app.listen(3000, () => {
   console.log("Server started on port 3000");
 });

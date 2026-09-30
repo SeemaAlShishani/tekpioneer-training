@@ -4,18 +4,18 @@ A simple Express server for Week 4 that listens and answers requests.
 
 ## How to run:
 1. npm install
-2. node --watch server.js
+2. npm run dev
 3. Open http://localhost:3000
 
-## Routes:
+## Routes & Status Codes:
 
-- GET / : Welcoming message
-- GET /about : Info about me
-- GET /greet/:name : Greets by name (Example: /greet/Seema)
-- GET /square/:n : Calculates square of a number (Example: /square/5)
-- GET /repeat : Repeats a word (Example: /repeat?word=hi&times=3)
-- GET /tasks : Returns all tasks
-- GET /tasks/stats : Returns tasks count and stats
-- GET /tasks/:id : Returns one task by id (Example: /tasks/1)
-- POST /tasks : Adds a new task with JSON body: { "text": "my task" }
-- DELETE /tasks/:id : Deletes a task by id (Example: /tasks/1)
+- GET / : Welcoming message (200)
+- GET /about : Info about me (200)
+- GET /greet/:name : Greets by name (200)
+- GET /square/:n : Calculates square (200 on success, 400 on invalid input)
+- GET /repeat : Repeats a word (200 on success, 400 on missing or invalid params)
+- GET /tasks : Returns all tasks (200)
+- GET /tasks/stats : Returns tasks count and stats (200)
+- GET /tasks/:id : Returns one task by id (200 on success, 404 if not found)
+- POST /tasks : Adds a task with { "text": "task text" } (201 on success, 400 on empty/invalid text)
+- DELETE /tasks/:id : Deletes a task by id (200 on success, 404 if not found)
