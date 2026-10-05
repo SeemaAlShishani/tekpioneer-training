@@ -1,0 +1,56 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "name": "Updated Training API"
+    },
+    {
+      "id": 2,
+      "name": "Postman Practice"
+    },
+    {
+      "id": 3,
+      "name": "New API Project"
+    },
+    {
+      "id": 4,
+      "name": "Persistence Test"
+    },
+    {
+      "id": 7,
+      "name": "Project To Delete"
+    },
+    {
+      "id": 8,
+      "name": "Project To Delete"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "text": "Learn Express",
+      "done": true,
+      "projectId": 1
+    },
+    {
+      "id": 2,
+      "text": "Build CRUD API",
+      "done": false,
+      "projectId": 1
+    },
+    {
+      "id": 3,
+      "text": "Test with Postman",
+      "done": false,
+      "projectId": 2
+    },
+    {
+      "id": 4,
+      "text": "Learn async await",
+      "done": false,
+      "projectId": 1
+    }
+  ],
+  "nextProjectId": 10,
+  "nextTaskId": 5
+}
