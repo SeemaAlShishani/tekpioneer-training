@@ -16,6 +16,11 @@ function loadTasks() {
   return JSON.parse(tasksData);
 }
 
+function saveTasks(tasks) {
+  const tasksText = JSON.stringify(tasks, null, 2);
+  fs.writeFileSync(FILE, tasksText);
+}
+
 if (command === "add") {
   const tasks = loadTasks();
 
@@ -30,9 +35,7 @@ if (command === "add") {
     done: false,
   });
 
-  const tasksText = JSON.stringify(tasks, null, 2);
-
-  fs.writeFileSync(FILE, tasksText);
+  saveTasks(tasks);
 
   console.log(`Added: ${text}`);
 } else if (command === "list") {
@@ -56,9 +59,7 @@ if (command === "add") {
   } else {
     task.done = true;
 
-    const tasksText = JSON.stringify(tasks, null, 2);
-
-    fs.writeFileSync(FILE, tasksText);
+    saveTasks(tasks);
 
     console.log(`Done: ${task.text}`);
   }
@@ -75,9 +76,7 @@ if (command === "add") {
       task.id = index + 1;
     });
 
-    const tasksText = JSON.stringify(tasks, null, 2);
-
-    fs.writeFileSync(FILE, tasksText);
+    saveTasks(tasks);
 
     console.log(`Deleted: ${task.text}`);
   }
