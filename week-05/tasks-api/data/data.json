@@ -49,8 +49,14 @@
       "text": "Learn async await",
       "done": false,
       "projectId": 1
+    },
+    {
+      "id": 5,
+      "text": "Race task 10",
+      "done": false,
+      "projectId": 1
     }
   ],
   "nextProjectId": 10,
-  "nextTaskId": 5
+  "nextTaskId": 6
 }

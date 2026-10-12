@@ -12,11 +12,15 @@ router.get("/", async (req, res, next) => {
     let result = data.tasks;
 
     if (req.query.done !== undefined) {
+      if (req.query.done !== "true" && req.query.done !== "false") {
+        return res.status(400).json({
+          error: "done must be either true or false",
+        });
+      }
+
       const done = req.query.done === "true";
 
-      result = result.filter(
-        (task) => task.done === done
-      );
+      result = result.filter((task) => task.done === done);
     }
 
     if (req.query.search) {
@@ -40,13 +44,11 @@ router.get("/:id", async (req, res, next) => {
 
     const id = Number(req.params.id);
 
-    const task = data.tasks.find(
-      (t) => t.id === id
-    );
+    const task = data.tasks.find((t) => t.id === id);
 
     if (!task) {
       return res.status(404).json({
-        error: "Task not found"
+        error: "Task not found",
       });
     }
 
@@ -67,17 +69,21 @@ router.post("/", async (req, res, next) => {
 
     if (error) {
       return res.status(400).json({
-        error
+        error,
       });
     }
 
-    const project = data.projects.find(
-      (p) => p.id === Number(projectId)
-    );
+    if (projectId === undefined || projectId === null) {
+      return res.status(400).json({
+        error: "projectId is required",
+      });
+    }
+
+    const project = data.projects.find((p) => p.id === Number(projectId));
 
     if (!project) {
       return res.status(400).json({
-        error: "Project not found"
+        error: "Project not found",
       });
     }
 
@@ -85,7 +91,7 @@ router.post("/", async (req, res, next) => {
       id: data.nextTaskId++,
       text: text.trim(),
       done: false,
-      projectId: Number(projectId)
+      projectId: Number(projectId),
     };
 
     data.tasks.push(newTask);
@@ -105,13 +111,11 @@ router.patch("/:id", async (req, res, next) => {
 
     const id = Number(req.params.id);
 
-    const task = data.tasks.find(
-      (t) => t.id === id
-    );
+    const task = data.tasks.find((t) => t.id === id);
 
     if (!task) {
       return res.status(404).json({
-        error: "Task not found"
+        error: "Task not found",
       });
     }
 
@@ -122,7 +126,7 @@ router.patch("/:id", async (req, res, next) => {
 
       if (error) {
         return res.status(400).json({
-          error
+          error,
         });
       }
 
@@ -132,7 +136,7 @@ router.patch("/:id", async (req, res, next) => {
     if ("done" in req.body) {
       if (typeof done !== "boolean") {
         return res.status(400).json({
-          error: "done must be true or false"
+          error: "done must be true or false",
         });
       }
 
@@ -140,13 +144,11 @@ router.patch("/:id", async (req, res, next) => {
     }
 
     if ("projectId" in req.body) {
-      const project = data.projects.find(
-        (p) => p.id === Number(projectId)
-      );
+      const project = data.projects.find((p) => p.id === Number(projectId));
 
       if (!project) {
         return res.status(400).json({
-          error: "Project not found"
+          error: "Project not found",
         });
       }
 
@@ -168,13 +170,11 @@ router.delete("/:id", async (req, res, next) => {
 
     const id = Number(req.params.id);
 
-    const index = data.tasks.findIndex(
-      (t) => t.id === id
-    );
+    const index = data.tasks.findIndex((t) => t.id === id);
 
     if (index === -1) {
       return res.status(404).json({
-        error: "Task not found"
+        error: "Task not found",
       });
     }
 
@@ -195,13 +195,11 @@ router.put("/:id", async (req, res, next) => {
 
     const id = Number(req.params.id);
 
-    const task = data.tasks.find(
-      (t) => t.id === id
-    );
+    const task = data.tasks.find((t) => t.id === id);
 
     if (!task) {
       return res.status(404).json({
-        error: "Task not found"
+        error: "Task not found",
       });
     }
 
@@ -211,17 +209,15 @@ router.put("/:id", async (req, res, next) => {
 
     if (error || typeof done !== "boolean") {
       return res.status(400).json({
-        error: error || "done must be true or false"
+        error: error || "done must be true or false",
       });
     }
 
-    const project = data.projects.find(
-      (p) => p.id === Number(projectId)
-    );
+    const project = data.projects.find((p) => p.id === Number(projectId));
 
     if (!project) {
       return res.status(400).json({
-        error: "Project not found"
+        error: "Project not found",
       });
     }
 

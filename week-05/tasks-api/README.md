@@ -1,20 +1,26 @@
-# Tasks API
+# tasks-api
 
-## Week 5 Day 3
+A modular REST API with full CRUD for tasks and projects, data persistence, and error handling.
 
-### Project deletion policy
+## How to run
+1. npm install
+2. npm run dev
+3. Server runs at http://localhost:3000
 
-A project cannot be deleted if it still has tasks.
+## API Routes & Status Codes
 
-The API returns:
+### Projects
+- GET /projects : Returns all projects (200)
+- GET /projects/:id : Returns one project (200, 404)
+- GET /projects/:id/tasks : Returns tasks for a project (200, 404)
+- POST /projects : Creates a project (201, 400)
+- PATCH /projects/:id : Updates a project (200, 400, 404)
+- DELETE /projects/:id : Deletes a project (204, 404, 409 if has tasks)
 
-- `409 Conflict` when the project has tasks.
-- `204 No Content` when the project has no tasks.
-
-### Persistence
-
-Projects and tasks are stored in `data/data.json`.
-
-The API uses async/await with `fs/promises` to load and save the data.
-
-Data survives after restarting the server.
+### Tasks
+- GET /tasks : Returns tasks with filters ?done=true&search=text (200, 400)
+- GET /tasks/:id : Returns one task (200, 404)
+- POST /tasks : Creates a task (201, 400)
+- PATCH /tasks/:id : Updates task partially (200, 400, 404)
+- PUT /tasks/:id : Replaces task completely (200, 400, 404)
+- DELETE /tasks/:id : Deletes a task (204, 404)
