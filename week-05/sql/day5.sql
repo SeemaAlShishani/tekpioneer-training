@@ -21,14 +21,14 @@ CREATE TABLE students (
 
 -- Insert 8 students
 INSERT INTO students (name, grade) VALUES
-('Ahmad', 95),
-('Sara', 88),
-('Omar', 76),
-('Lina', 92),
-('Yazan', 65),
-('Dana', 58),
-('Sami', 43),
-('Noor', 81);
+('Student 1', 85),
+('Student 2', 62),
+('Student 3', 45),
+('Student 4', 90),
+('Student 5', 73),
+('Student 6', 55),
+('Student 7', 38),
+('Student 8', 100);
 
 -- Count students
 SELECT COUNT(*) FROM students;
