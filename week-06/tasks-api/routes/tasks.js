@@ -1,90 +1,91 @@
 const express = require("express");
 const router = express.Router();
-
-const { loadData, saveData } = require("../data/store");
+const pool = require("../data/db");
 const { validateTaskText } = require("../validation");
+const { loadData, saveData } = require("../data/store");
 
-// GET all tasks + filters
 router.get("/", async (req, res, next) => {
   try {
-    const data = await loadData();
+    const { done, search } = req.query;
 
-    let result = data.tasks;
-
-    if (req.query.done !== undefined) {
-      if (req.query.done !== "true" && req.query.done !== "false") {
-        return res.status(400).json({
-          error: "done must be either true or false",
-        });
-      }
-
-      const done = req.query.done === "true";
-
-      result = result.filter((task) => task.done === done);
+    if (done !== undefined && done !== "true" && done !== "false") {
+      return res.status(400).json({
+        error: "done must be either true or false",
+      });
     }
 
-    if (req.query.search) {
-      const search = req.query.search.toLowerCase();
+    const conditions = [];
+    const values = [];
 
-      result = result.filter((task) =>
-        task.text.toLowerCase().includes(search)
-      );
+    if (done !== undefined) {
+      values.push(done === "true");
+      conditions.push(`done = $${values.length}`);
     }
 
-    res.json(result);
+    if (search) {
+      values.push(search);
+      conditions.push(`text ILIKE '%' || $${values.length} || '%'`);
+    }
+
+    let queryText =
+      'SELECT id, text, done, project_id AS "projectId" FROM tasks';
+
+    if (conditions.length > 0) {
+      queryText += " WHERE " + conditions.join(" AND ");
+    }
+
+    queryText += " ORDER BY id ASC";
+
+    const result = await pool.query(queryText, values);
+    res.json(result.rows);
   } catch (err) {
     next(err);
   }
 });
 
-// GET one task
 router.get("/:id", async (req, res, next) => {
   try {
-    const data = await loadData();
+    const numId = Number(req.params.id);
 
-    const id = Number(req.params.id);
-
-    const task = data.tasks.find((t) => t.id === id);
-
-    if (!task) {
+    if (!Number.isInteger(numId) || numId <= 0) {
       return res.status(404).json({
         error: "Task not found",
       });
     }
 
-    res.json(task);
+    const queryText =
+      'SELECT id, text, done, project_id AS "projectId" FROM tasks WHERE id = $1';
+    const result = await pool.query(queryText, [numId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: "Task not found",
+      });
+    }
+
+    res.json(result.rows[0]);
   } catch (err) {
     next(err);
   }
 });
 
-// POST create task
 router.post("/", async (req, res, next) => {
   try {
     const data = await loadData();
-
     const { text, projectId } = req.body;
-
     const error = validateTaskText(text);
 
     if (error) {
-      return res.status(400).json({
-        error,
-      });
+      return res.status(400).json({ error });
     }
 
     if (projectId === undefined || projectId === null) {
-      return res.status(400).json({
-        error: "projectId is required",
-      });
+      return res.status(400).json({ error: "projectId is required" });
     }
 
     const project = data.projects.find((p) => p.id === Number(projectId));
-
     if (!project) {
-      return res.status(400).json({
-        error: "Project not found",
-      });
+      return res.status(400).json({ error: "Project not found" });
     }
 
     const newTask = {
@@ -95,116 +96,80 @@ router.post("/", async (req, res, next) => {
     };
 
     data.tasks.push(newTask);
-
     await saveData(data);
-
     res.status(201).json(newTask);
   } catch (err) {
     next(err);
   }
 });
 
-// PATCH task
 router.patch("/:id", async (req, res, next) => {
   try {
     const data = await loadData();
-
     const id = Number(req.params.id);
-
     const task = data.tasks.find((t) => t.id === id);
 
     if (!task) {
-      return res.status(404).json({
-        error: "Task not found",
-      });
+      return res.status(404).json({ error: "Task not found" });
     }
 
     const { text, done, projectId } = req.body;
 
     if ("text" in req.body) {
       const error = validateTaskText(text);
-
-      if (error) {
-        return res.status(400).json({
-          error,
-        });
-      }
-
+      if (error) return res.status(400).json({ error });
       task.text = text.trim();
     }
 
     if ("done" in req.body) {
       if (typeof done !== "boolean") {
-        return res.status(400).json({
-          error: "done must be true or false",
-        });
+        return res.status(400).json({ error: "done must be true or false" });
       }
-
       task.done = done;
     }
 
     if ("projectId" in req.body) {
       const project = data.projects.find((p) => p.id === Number(projectId));
-
-      if (!project) {
-        return res.status(400).json({
-          error: "Project not found",
-        });
-      }
-
+      if (!project) return res.status(400).json({ error: "Project not found" });
       task.projectId = Number(projectId);
     }
 
     await saveData(data);
-
     res.json(task);
   } catch (err) {
     next(err);
   }
 });
 
-// DELETE task
 router.delete("/:id", async (req, res, next) => {
   try {
     const data = await loadData();
-
     const id = Number(req.params.id);
-
     const index = data.tasks.findIndex((t) => t.id === id);
 
     if (index === -1) {
-      return res.status(404).json({
-        error: "Task not found",
-      });
+      return res.status(404).json({ error: "Task not found" });
     }
 
     data.tasks.splice(index, 1);
-
     await saveData(data);
-
     res.status(204).send();
   } catch (err) {
     next(err);
   }
 });
 
-// PUT replace task
 router.put("/:id", async (req, res, next) => {
   try {
     const data = await loadData();
-
     const id = Number(req.params.id);
-
     const task = data.tasks.find((t) => t.id === id);
 
     if (!task) {
-      return res.status(404).json({
-        error: "Task not found",
-      });
+      return res.status(404).json({ error: "Task not found" });
     }
 
     const { text, done, projectId } = req.body;
-
     const error = validateTaskText(text);
 
     if (error || typeof done !== "boolean") {
@@ -214,11 +179,8 @@ router.put("/:id", async (req, res, next) => {
     }
 
     const project = data.projects.find((p) => p.id === Number(projectId));
-
     if (!project) {
-      return res.status(400).json({
-        error: "Project not found",
-      });
+      return res.status(400).json({ error: "Project not found" });
     }
 
     task.text = text.trim();
@@ -226,7 +188,6 @@ router.put("/:id", async (req, res, next) => {
     task.projectId = Number(projectId);
 
     await saveData(data);
-
     res.json(task);
   } catch (err) {
     next(err);
