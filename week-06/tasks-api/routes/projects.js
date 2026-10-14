@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../data/db");
-const { loadData, saveData } = require("../data/store");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -17,7 +16,6 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const numId = Number(req.params.id);
-
     if (!Number.isInteger(numId) || numId <= 0) {
       return res.status(404).json({ error: "Project not found" });
     }
@@ -40,7 +38,6 @@ router.get("/:id", async (req, res, next) => {
 router.get("/:id/tasks", async (req, res, next) => {
   try {
     const numId = Number(req.params.id);
-
     if (!Number.isInteger(numId) || numId <= 0) {
       return res.status(404).json({ error: "Project not found" });
     }
@@ -49,7 +46,6 @@ router.get("/:id/tasks", async (req, res, next) => {
       "SELECT id FROM projects WHERE id = $1",
       [numId],
     );
-
     if (projectCheck.rows.length === 0) {
       return res.status(404).json({ error: "Project not found" });
     }
@@ -66,21 +62,17 @@ router.get("/:id/tasks", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const data = await loadData();
     const { name } = req.body;
-
     if (!name || typeof name !== "string" || name.trim() === "") {
       return res.status(400).json({ error: "Project name is required" });
     }
 
-    const newProject = {
-      id: data.nextProjectId++,
-      name: name.trim(),
-    };
+    const result = await pool.query(
+      "INSERT INTO projects (name) VALUES ($1) RETURNING id, name",
+      [name.trim()],
+    );
 
-    data.projects.push(newProject);
-    await saveData(data);
-    res.status(201).json(newProject);
+    res.status(201).json(result.rows[0]);
   } catch (err) {
     next(err);
   }
@@ -88,23 +80,26 @@ router.post("/", async (req, res, next) => {
 
 router.patch("/:id", async (req, res, next) => {
   try {
-    const data = await loadData();
-    const id = Number(req.params.id);
-    const project = data.projects.find((p) => p.id === id);
-
-    if (!project) {
+    const numId = Number(req.params.id);
+    if (!Number.isInteger(numId) || numId <= 0) {
       return res.status(404).json({ error: "Project not found" });
     }
 
     const { name } = req.body;
-
     if (!name || typeof name !== "string" || name.trim() === "") {
       return res.status(400).json({ error: "Project name is required" });
     }
 
-    project.name = name.trim();
-    await saveData(data);
-    res.json(project);
+    const result = await pool.query(
+      "UPDATE projects SET name = $1 WHERE id = $2 RETURNING id, name",
+      [name.trim(), numId],
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    res.json(result.rows[0]);
   } catch (err) {
     next(err);
   }
@@ -112,25 +107,26 @@ router.patch("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const data = await loadData();
-    const id = Number(req.params.id);
-    const index = data.projects.findIndex((p) => p.id === id);
-
-    if (index === -1) {
+    const numId = Number(req.params.id);
+    if (!Number.isInteger(numId) || numId <= 0) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    const hasTasks = data.tasks.some((t) => t.projectId === id);
-    if (hasTasks) {
+    const result = await pool.query("DELETE FROM projects WHERE id = $1", [
+      numId,
+    ]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    if (err.code === "23503") {
       return res
         .status(409)
         .json({ error: "Cannot delete project with existing tasks" });
     }
-
-    data.projects.splice(index, 1);
-    await saveData(data);
-    res.status(204).send();
-  } catch (err) {
     next(err);
   }
 });

@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../data/db");
 const { validateTaskText } = require("../validation");
-const { loadData, saveData } = require("../data/store");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -71,10 +70,9 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const data = await loadData();
     const { text, projectId } = req.body;
-    const error = validateTaskText(text);
 
+    const error = validateTaskText(text);
     if (error) {
       return res.status(400).json({ error });
     }
@@ -83,33 +81,29 @@ router.post("/", async (req, res, next) => {
       return res.status(400).json({ error: "projectId is required" });
     }
 
-    const project = data.projects.find((p) => p.id === Number(projectId));
-    if (!project) {
+    const queryText = `
+      INSERT INTO tasks (text, done, project_id)
+      VALUES ($1, false, $2)
+      RETURNING id, text, done, project_id AS "projectId"
+    `;
+
+    const result = await pool.query(queryText, [
+      text.trim(),
+      Number(projectId),
+    ]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    if (err.code === "23503") {
       return res.status(400).json({ error: "Project not found" });
     }
-
-    const newTask = {
-      id: data.nextTaskId++,
-      text: text.trim(),
-      done: false,
-      projectId: Number(projectId),
-    };
-
-    data.tasks.push(newTask);
-    await saveData(data);
-    res.status(201).json(newTask);
-  } catch (err) {
     next(err);
   }
 });
 
 router.patch("/:id", async (req, res, next) => {
   try {
-    const data = await loadData();
-    const id = Number(req.params.id);
-    const task = data.tasks.find((t) => t.id === id);
-
-    if (!task) {
+    const numId = Number(req.params.id);
+    if (!Number.isInteger(numId) || numId <= 0) {
       return res.status(404).json({ error: "Task not found" });
     }
 
@@ -118,77 +112,102 @@ router.patch("/:id", async (req, res, next) => {
     if ("text" in req.body) {
       const error = validateTaskText(text);
       if (error) return res.status(400).json({ error });
-      task.text = text.trim();
     }
 
-    if ("done" in req.body) {
-      if (typeof done !== "boolean") {
-        return res.status(400).json({ error: "done must be true or false" });
-      }
-      task.done = done;
+    if ("done" in req.body && typeof done !== "boolean") {
+      return res.status(400).json({ error: "done must be true or false" });
     }
 
-    if ("projectId" in req.body) {
-      const project = data.projects.find((p) => p.id === Number(projectId));
-      if (!project) return res.status(400).json({ error: "Project not found" });
-      task.projectId = Number(projectId);
-    }
+    const newText = "text" in req.body ? text.trim() : null;
+    const newDone = "done" in req.body ? done : null;
+    const newProjectId = "projectId" in req.body ? Number(projectId) : null;
 
-    await saveData(data);
-    res.json(task);
-  } catch (err) {
-    next(err);
-  }
-});
+    const queryText = `
+      UPDATE tasks
+      SET text = COALESCE($1, text),
+          done = COALESCE($2, done),
+          project_id = COALESCE($3, project_id)
+      WHERE id = $4
+      RETURNING id, text, done, project_id AS "projectId"
+    `;
 
-router.delete("/:id", async (req, res, next) => {
-  try {
-    const data = await loadData();
-    const id = Number(req.params.id);
-    const index = data.tasks.findIndex((t) => t.id === id);
+    const result = await pool.query(queryText, [
+      newText,
+      newDone,
+      newProjectId,
+      numId,
+    ]);
 
-    if (index === -1) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: "Task not found" });
     }
 
-    data.tasks.splice(index, 1);
-    await saveData(data);
-    res.status(204).send();
+    res.json(result.rows[0]);
   } catch (err) {
+    if (err.code === "23503") {
+      return res.status(400).json({ error: "Project not found" });
+    }
     next(err);
   }
 });
 
 router.put("/:id", async (req, res, next) => {
   try {
-    const data = await loadData();
-    const id = Number(req.params.id);
-    const task = data.tasks.find((t) => t.id === id);
-
-    if (!task) {
+    const numId = Number(req.params.id);
+    if (!Number.isInteger(numId) || numId <= 0) {
       return res.status(404).json({ error: "Task not found" });
     }
 
     const { text, done, projectId } = req.body;
     const error = validateTaskText(text);
 
-    if (error || typeof done !== "boolean") {
+    if (error || typeof done !== "boolean" || projectId === undefined) {
       return res.status(400).json({
-        error: error || "done must be true or false",
+        error: error || "done must be true or false and projectId is required",
       });
     }
 
-    const project = data.projects.find((p) => p.id === Number(projectId));
-    if (!project) {
-      return res.status(400).json({ error: "Project not found" });
+    const queryText = `
+      UPDATE tasks
+      SET text = $1, done = $2, project_id = $3
+      WHERE id = $4
+      RETURNING id, text, done, project_id AS "projectId"
+    `;
+
+    const result = await pool.query(queryText, [
+      text.trim(),
+      done,
+      Number(projectId),
+      numId,
+    ]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Task not found" });
     }
 
-    task.text = text.trim();
-    task.done = done;
-    task.projectId = Number(projectId);
+    res.json(result.rows[0]);
+  } catch (err) {
+    if (err.code === "23503") {
+      return res.status(400).json({ error: "Project not found" });
+    }
+    next(err);
+  }
+});
 
-    await saveData(data);
-    res.json(task);
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const numId = Number(req.params.id);
+    if (!Number.isInteger(numId) || numId <= 0) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const result = await pool.query("DELETE FROM tasks WHERE id = $1", [numId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
