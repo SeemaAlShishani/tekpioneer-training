@@ -3,6 +3,22 @@ const router = express.Router();
 const pool = require("../data/db");
 const { validateTaskText } = require("../validation");
 
+router.get("/stats", async (req, res, next) => {
+  try {
+    const queryText = `
+      SELECT 
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE done)::int AS done,
+        (COUNT(*) - COUNT(*) FILTER (WHERE done))::int AS remaining
+      FROM tasks
+    `;
+    const result = await pool.query(queryText);
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get("/", async (req, res, next) => {
   try {
     const { done, search } = req.query;

@@ -2,6 +2,32 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../data/db");
 
+router.get("/stats", async (req, res, next) => {
+  try {
+    const queryText = `
+      SELECT 
+        projects.id,
+        projects.name,
+        COUNT(tasks.id)::int AS "taskCount",
+        COALESCE(
+          ROUND(
+            (COUNT(tasks.id) FILTER (WHERE tasks.done)::numeric / NULLIF(COUNT(tasks.id), 0)) * 100, 
+            2
+          ), 
+          0
+        )::float AS "percentDone"
+      FROM projects
+      LEFT JOIN tasks ON projects.id = tasks.project_id
+      GROUP BY projects.id, projects.name
+      ORDER BY projects.id ASC
+    `;
+    const result = await pool.query(queryText);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get("/", async (req, res, next) => {
   try {
     const result = await pool.query(
