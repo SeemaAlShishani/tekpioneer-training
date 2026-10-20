@@ -48,8 +48,8 @@ FROM students
 WHERE grade >= 50;
 
 -- Test CHECK constraint
-INSERT INTO students (name, grade)
-VALUES ('Test', 120);
+--INSERT INTO students (name, grade) VALUES
+--('Test', 120);
 
 -- Count tasks by done status
 SELECT done, COUNT(*)

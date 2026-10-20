@@ -97,16 +97,20 @@ router.post("/", async (req, res, next) => {
       return res.status(400).json({ error: "projectId is required" });
     }
 
+    const numProjectId = Number(projectId);
+    if (!Number.isInteger(numProjectId) || numProjectId <= 0) {
+      return res
+        .status(400)
+        .json({ error: "projectId must be a positive whole number" });
+    }
+
     const queryText = `
       INSERT INTO tasks (text, done, project_id)
       VALUES ($1, false, $2)
       RETURNING id, text, done, project_id AS "projectId"
     `;
 
-    const result = await pool.query(queryText, [
-      text.trim(),
-      Number(projectId),
-    ]);
+    const result = await pool.query(queryText, [text.trim(), numProjectId]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     if (err.code === "23503") {
@@ -132,6 +136,15 @@ router.patch("/:id", async (req, res, next) => {
 
     if ("done" in req.body && typeof done !== "boolean") {
       return res.status(400).json({ error: "done must be true or false" });
+    }
+
+    if ("projectId" in req.body) {
+      const numProjectId = Number(projectId);
+      if (!Number.isInteger(numProjectId) || numProjectId <= 0) {
+        return res
+          .status(400)
+          .json({ error: "projectId must be a positive whole number" });
+      }
     }
 
     const newText = "text" in req.body ? text.trim() : null;
@@ -183,6 +196,13 @@ router.put("/:id", async (req, res, next) => {
       });
     }
 
+    const numProjectId = Number(projectId);
+    if (!Number.isInteger(numProjectId) || numProjectId <= 0) {
+      return res
+        .status(400)
+        .json({ error: "projectId must be a positive whole number" });
+    }
+
     const queryText = `
       UPDATE tasks
       SET text = $1, done = $2, project_id = $3
@@ -193,7 +213,7 @@ router.put("/:id", async (req, res, next) => {
     const result = await pool.query(queryText, [
       text.trim(),
       done,
-      Number(projectId),
+      numProjectId,
       numId,
     ]);
 
