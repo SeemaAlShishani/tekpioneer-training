@@ -1,7 +1,7 @@
 const pool = require("../data/db");
 
 async function resetDb() {
-  await pool.query("TRUNCATE tasks, projects RESTART IDENTITY CASCADE");
+  await pool.query("TRUNCATE tasks, projects, users RESTART IDENTITY CASCADE");
 
   await pool.query(
     "INSERT INTO projects (name) VALUES ('Project A'), ('Project B')",

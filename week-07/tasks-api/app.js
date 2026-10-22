@@ -1,6 +1,7 @@
 const express = require("express");
 const tasksRouter = require("./routes/tasks");
 const projectsRouter = require("./routes/projects");
+const authRouter = require("./routes/auth");
 const pool = require("./data/db");
 
 const app = express();
@@ -25,6 +26,7 @@ app.get("/health", async (req, res, next) => {
   }
 });
 
+app.use("/auth", authRouter);
 app.use("/tasks", tasksRouter);
 app.use("/projects", projectsRouter);
 

@@ -4,14 +4,15 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-  "dev": "node --watch server.js",
-  "test": "node --env-file=.env.test ./node_modules/jest/bin/jest.js --runInBand"
-},
+    "dev": "node --watch server.js",
+    "test": "node --env-file=.env.test ./node_modules/jest/bin/jest.js --runInBand"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^18.0.7",
     "express": "^5.2.1",
     "pg": "^8.23.1"
